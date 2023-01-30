@@ -9,12 +9,20 @@
             ],
             "js": [
                 "main.js"
-            ],
-            "run_at": "document_idle",
-            "permissions": [
-                "webNavigation",
-                "tabs"
             ]
         }
+    ],
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": true
+    },
+    "permissions": [
+        "webNavigation",
+        "tabs",
+        "<all_urls>",
+        "webRequest",
+        "webRequestBlocking"
     ]
 }

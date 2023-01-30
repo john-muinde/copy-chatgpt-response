@@ -19,9 +19,15 @@ function loadPage() {
   }
 
   var button = document.querySelectorAll(".copy_code_button");
-  [...button].forEach((elm, index) => {
+  // console.log([...button].length,'::::::::::::',[...arr].length);
+  [...button].forEach((elm) => {
     elm.addEventListener("click", (e) => {
-      text = arr[index].innerText;
+      let link = e.target.closest(".markdown button");
+      text = [...link.closest(".markdown").querySelectorAll("p")].reduce(
+        (acc, currValue) => (acc += ` ${currValue.textContent}`),
+        ""
+      );
+      console.log(text);
       // Split the text by newline characters
       let lines = text.split("\n");
 
@@ -31,19 +37,12 @@ function loadPage() {
       // Join the remaining lines back together
       let trimmedText = lines.join("\n");
       navigator.clipboard.writeText(trimmedText);
+      console.log('first',elm.textContent)
       elm.textContent = "Copied ";
+      console.log('second',elm.textContent);
+
     });
   });
 }
 
-let body = document.querySelector("body");
-
-// body.addEventListener("DOMNodeInsertedIntoDocument", loadPage);
-// body.addEventListener("DOMNodeInserted", loadPage);
-
-// Listen for changes to the browser's history
-
-// chrome.webNavigation.onHistoryStateUpdated.addListener(function (details) {
-//   chrome.tabs.executeScript(details.tabId, { file: "main.js" });
-// }, {});
 loadPage();
