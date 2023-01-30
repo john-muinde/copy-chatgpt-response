@@ -1,10 +1,32 @@
+var getSiblings = function (e) {
+  // for collecting siblings
+  let siblings = [];
+  // if no parent, return no sibling
+  if (!e.parentNode) {
+    return siblings;
+  }
+  // first child of the parent node
+  let sibling = e.parentNode.firstChild;
+  // collecting siblings
+  while (sibling) {
+    if (sibling.nodeType === 1 && sibling !== e) {
+      siblings.push(sibling);
+    }
+    sibling = sibling.nextSibling;
+  }
+  return siblings;
+};
+
 function loadPage() {
   var arr = document.getElementsByClassName("markdown");
 
   for (let i = 0; i < arr.length; i++) {
     var btn = document.createElement("button");
     btn.classList.add("copy_code_button");
-    btn.appendChild(document.createTextNode("Copy Response"));
+    var span = document.createElement("span");
+    span.classList.add("textSpan");
+    span.appendChild(document.createTextNode("Text Copy"));
+    btn.appendChild(span);
     arr[i].appendChild(btn);
     //styling the button
     btn.style.position = "absolute";
@@ -22,27 +44,47 @@ function loadPage() {
   // console.log([...button].length,'::::::::::::',[...arr].length);
   [...button].forEach((elm) => {
     elm.addEventListener("click", (e) => {
-      let link = e.target.closest(".markdown button");
-      text = [...link.closest(".markdown").querySelectorAll("p")].reduce(
-        (acc, currValue) => (acc += ` ${currValue.textContent}`),
-        ""
-      );
-      console.log(text);
+      var text = e.target.parentNode.parentNode;
+      // Create a clone of the div element
+      var clonedDiv = text.cloneNode(true);
       // Split the text by newline characters
-      let lines = text.split("\n");
-
-      // Remove the last line
-      lines.pop();
-
-      // Join the remaining lines back together
-      let trimmedText = lines.join("\n");
+      text = clonedDiv.innerText;
+      trimmedText = text.replaceAll(/(Text\sCopy|Text\sCopied)/gm, "");
+      console.log(trimmedText);
+      e.target.textContent = "Text Copied";
       navigator.clipboard.writeText(trimmedText);
-      console.log('first',elm.textContent)
-      elm.textContent = "Copied ";
-      console.log('second',elm.textContent);
-
     });
   });
 }
+
+var currentURL = window.location.href;
+
+setInterval(function () {
+  if (window.location.href !== currentURL) {
+    function checkForBodyChanges() {
+      var body = document.body;
+      var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+          if (mutation.type === "childList") {
+            // Execute the function if there's a change in the body tag
+            loadPage();
+            // Disconnect the observer to stop checking for changes
+            observer.disconnect();
+          }
+        });
+      });
+
+      var config = {
+        childList: true,
+        subtree: true,
+      };
+
+      observer.observe(body, config);
+    }
+    checkForBodyChanges();
+
+    currentURL = window.location.href;
+  }
+}, 500);
 
 loadPage();
