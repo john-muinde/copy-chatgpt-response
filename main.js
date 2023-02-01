@@ -44,18 +44,21 @@ function loadPage() {
   // console.log([...button].length,'::::::::::::',[...arr].length);
   [...button].forEach((elm) => {
     elm.addEventListener("click", (e) => {
-      var text = e.target.parentNode.parentNode;
-      // Create a clone of the div element
-      var clonedDiv = text.cloneNode(true);
-      // Split the text by newline characters
-      text = clonedDiv.innerText;
-      trimmedText = text.replaceAll(/(Text\sCopy|Text\sCopied)/gm, "");
-      console.log(trimmedText);
+      var textNode = e.target.parentNode.parentNode;
+      var range = document.createRange();
+      range.selectNode(textNode);
+      window.getSelection().removeAllRanges(); // clear current selection
+      window.getSelection().addRange(range); // to select text
       e.target.textContent = "Text Copied";
-      navigator.clipboard.writeText(trimmedText);
+      document.execCommand("copy");
+      window.getSelection().removeAllRanges(); // to deselect
+
+      // trimmedText = text.replaceAll(/(Text\sCopy|Text\sCopied)/gm, "");
+      // console.log(trimmedText);
     });
   });
 }
+window.onload = () => loadPage();
 
 var currentURL = window.location.href;
 
@@ -86,5 +89,3 @@ setInterval(function () {
     currentURL = window.location.href;
   }
 }, 500);
-
-loadPage();
