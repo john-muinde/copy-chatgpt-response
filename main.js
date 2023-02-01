@@ -59,6 +59,7 @@ function loadPage() {
   });
 }
 window.onload = () => loadPage();
+loadPage();
 
 var currentURL = window.location.href;
 
